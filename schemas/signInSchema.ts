@@ -9,4 +9,4 @@ export const signInSchema = z.object({
         .string()
         .min(1, {message: "Password is required"})
         .min(8, {message: "Password must be atleast 8 characters"})
-});
+})
