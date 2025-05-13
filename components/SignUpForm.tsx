@@ -10,6 +10,7 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EmailAddress } from "@clerk/nextjs/server"
 import { useRouter } from "next/router"
+import {Card,CardBody,} from "@heroui/card";
 
 export default function SignUpForm(){
     const router = useRouter()
