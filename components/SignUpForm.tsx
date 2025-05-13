@@ -9,11 +9,15 @@ import { signUpSchema } from "@/schemas/signUpSchema"
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EmailAddress } from "@clerk/nextjs/server"
+import { useRouter } from "next/router"
 
 export default function SignUpForm(){
+    const router = useRouter()
     const [verifying, setVerifying] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [authError, setAuthError] = useState<string | null> (null)
+    const [verificationError, setVerificationError] = useState<string | null>(null)
+    const[verificationCode, setVerificationCode] = useState ("")
     const {signUp, isLoaded, setActive} = useSignUp()
 
     const {
@@ -53,7 +57,37 @@ export default function SignUpForm(){
         }
     }
 
-    const handleVerificationSubmit = async () => {}
+    const handleVerificationSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if(!isLoaded || !signUp) return
+        setIsSubmitting(true)
+        setAuthError(null)
+
+        try {
+            const result = await signUp.
+            attemptEmailAddressVerification({
+                code: verificationCode
+            })
+            //todo: console result
+            if(result.status === "complete"){
+                await setActive({session: result.createdSessionId})
+                router.push("/dashboard")
+            }else {
+                console.error("Verification incomplete", result)
+                setVerificationError(
+                    "Verification could not be complete"
+                )
+            }
+        } catch(error:any) {
+            console.error("Verification incomplete", error)
+            setVerificationError(
+                error.errors?.[0]?.message || 
+                "An error occured during the signup. please try again"
+            )
+        }finally{
+            setIsSubmitting(false)
+        }
+    }
 
     if(verifying){
         return(
