@@ -15,6 +15,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.19.2",
     "@heroui/card": "^2.2.18",
+    "@heroui/input": "^2.4.19",
     "@heroui/react": "^2.7.8",
     "@heroui/system": "^2.4.15",
     "@heroui/theme": "^2.4.15",
