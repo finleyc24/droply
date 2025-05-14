@@ -1,29 +1,37 @@
 "use client"
-
-import {useForm} from "react-hook-form"
-import {useSignUp} from "@clerk/nextjs"
-import{z} from "zod"
-
-//zod custom schema
-import { signUpSchema } from "@/schemas/signUpSchema"
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { EmailAddress } from "@clerk/nextjs/server"
-import { useRouter } from "next/router"
-import {Card, CardBody, CardHeader,Button, Divider} from "@heroui/react";
-import {Input} from "@heroui/react";
-import {Mail, Lock, AlertCircle, CheckCircle, Eye, EyeOff} from "lucide-react"
-import { div } from "framer-motion/client"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSignUp } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { z } from "zod";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Card, CardBody, CardHeader, CardFooter } from "@heroui/card";
+import { Divider } from "@heroui/divider";
+import {
+  Mail,
+  Lock,
+  AlertCircle,
+  CheckCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { signUpSchema } from "@/schemas/signUpSchema";
 
 export default function SignUpForm(){
-    const router = useRouter()
-    const [verifying, setVerifying] = useState(false)
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [authError, setAuthError] = useState<string | null> (null)
-    const [verificationError, setVerificationError] = useState<string | null>(null)
-    const[verificationCode, setVerificationCode] = useState ("")
-    const {signUp, isLoaded, setActive} = useSignUp()
-
+    const router = useRouter();
+    const { signUp, isLoaded, setActive } = useSignUp();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [authError, setAuthError] = useState<string | null>(null);
+    const [verifying, setVerifying] = useState(false);
+    const [verificationCode, setVerificationCode] = useState("");
+    const [verificationError, setVerificationError] = useState<string | null>(
+null
+    );
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const {
         register,
         handleSubmit,
@@ -202,10 +210,108 @@ export default function SignUpForm(){
                         className="w-full"
                     />
                     </div>
-                </form>
+                    <div className="space-y-2">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-default-900"
+            >
+              Password
+            </label>
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              startContent={<Lock className="h-4 w-4 text-default-500" />}
+              endContent={
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="sm"
+                  onClick={() => setShowPassword(!showPassword)}
+                  type="button"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-default-500" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-default-500" />
+                  )}
+                </Button>
+              }
+              isInvalid={!!errors.password}
+              errorMessage={errors.password?.message}
+              {...register("password")}
+              className="w-full"
+            />
+          </div>
 
-            </CardBody>
-        </Card>
-    )
+          <div className="space-y-2">
+            <label
+              htmlFor="passwordConfirmation"
+              className="text-sm font-medium text-default-900"
+            >
+              Confirm Password
+            </label>
+            <Input
+              id="passwordConfirmation"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="••••••••"
+              startContent={<Lock className="h-4 w-4 text-default-500" />}
+              endContent={
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="sm"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  type="button"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-default-500" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-default-500" />
+                  )}
+                </Button>
+              }
+              isInvalid={!!errors.passwordConfirmation}
+              errorMessage={errors.passwordConfirmation?.message}
+              {...register("passwordConfirmation")}
+              className="w-full"
+            />
+          </div>
 
+          <div className="space-y-4">
+            <div className="flex items-start gap-2">
+              <CheckCircle className="h-5 w-5 text-primary mt-0.5" />
+              <p className="text-sm text-default-600">
+                By signing up, you agree to our Terms of Service and Privacy
+                Policy
+              </p>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            color="primary"
+            className="w-full"
+            isLoading={isSubmitting}
+          >
+            {isSubmitting ? "Creating account..." : "Create Account"}
+          </Button>
+        </form>
+      </CardBody>
+
+      <Divider />
+
+      <CardFooter className="flex justify-center py-4">
+        <p className="text-sm text-default-600">
+          Already have an account?{" "}
+          <Link
+            href="/sign-in"
+            className="text-primary hover:underline font-medium"
+          >
+            Sign in
+          </Link>
+        </p>
+      </CardFooter>
+    </Card>
+  );
 }
